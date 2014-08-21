@@ -1,11 +1,10 @@
 # coding=utf-8
 import logging
-from datetime import timedelta #DO NOT REMOVE!!!
 from django.utils import timezone
 from django.utils.module_loading import import_by_path
 from django.contrib.auth.models import User
 from django.db.models import Count
-from celery.task import task
+from celery import shared_task as task
 from .utils import get_attendants_from_config
 
 logger = logging.getLogger(__name__)
@@ -59,6 +58,7 @@ def send_notification(event):
 
 @task(name='notifications.send_delayed')
 def send_delayed_notifications():
+    from datetime import timedelta #DO NOT REMOVE!!!
     from .models import Transport, Notification, MultipleNotificationTemplateConfig, Subscription
 
     transports = Transport.objects.filter(allows_freq_config=True)
