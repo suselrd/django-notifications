@@ -2,7 +2,9 @@
 
 from django.contrib.auth.models import User
 from django.db import models
-from . import Event, NotificationTemplateConfig, Transport
+from .event import Event
+from .transport import Transport
+from .notificationtemplateconfig import NotificationTemplateConfig
 
 
 class Notification(models.Model):

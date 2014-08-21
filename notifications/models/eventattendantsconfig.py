@@ -1,7 +1,8 @@
 # coding=utf-8
 from django.db import models
 from ..fields import JSONField
-from . import EventType, Transport
+from .event import EventType
+from .transport import Transport
 
 
 class EventAttendantsConfig(models.Model):

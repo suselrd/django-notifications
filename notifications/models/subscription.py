@@ -1,7 +1,8 @@
 # coding=utf-8
 from django.db import models
 from django.contrib.auth.models import User
-from . import Transport, EventType
+from .transport import Transport
+from .event import EventType
 
 
 class SubscriptionFrequency(models.Model):

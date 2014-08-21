@@ -2,7 +2,8 @@
 
 from django.contrib.auth.models import User
 from django.db import models
-from . import NotificationTemplateConfig, Event
+from .event import Event
+from .notificationtemplateconfig import NotificationTemplateConfig
 
 
 class FeedItem(models.Model):
