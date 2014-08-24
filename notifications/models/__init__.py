@@ -7,5 +7,5 @@ from .eventattendantsconfig import EventAttendantsConfig, AttendantRole
 from .notificationtemplateconfig import NotificationTemplateConfig, MultipleNotificationTemplateConfig
 from .notification import Notification
 from .feeditem import FeedItem
-from .subscription import SubscriptionFrequency, Subscription
+from .subscription import SubscriptionFrequency, Subscription, DefaultSubscription
 from .usereventrelation import UserEventRelation

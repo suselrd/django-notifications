@@ -8,6 +8,11 @@ Allows to configure (usign django admin) all the required system events to liste
 
 Changelog
 =========
+0.0.2
+-----
+-Added Default Subscription configuration functionality
+-Added Event Type Category model
+
 0.0.1
 -----
 
