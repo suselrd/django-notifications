@@ -8,7 +8,13 @@ from .models import (Action,
                      Transport,
                      EventType,
                      EventObjectRole,
-                     SubscriptionFrequency, MultipleNotificationTemplateConfig, Subscription, Notification, AttendantRole)
+                     SubscriptionFrequency,
+                     MultipleNotificationTemplateConfig,
+                     Subscription,
+                     Notification,
+                     AttendantRole,
+                     DefaultSubscription)
+from notifications.models.event import EventTypeCategory
 
 
 class NotificationTemplateConfigAdmin(admin.ModelAdmin):
@@ -21,12 +27,14 @@ class EventAttendantsConfigAdmin(admin.ModelAdmin):
 
 admin.site.register(Action)
 admin.site.register(EventType)
+admin.site.register(EventTypeCategory)
 admin.site.register(EventAttendantsConfig, EventAttendantsConfigAdmin)
 admin.site.register(NotificationTemplateConfig, NotificationTemplateConfigAdmin)
 admin.site.register(MultipleNotificationTemplateConfig)
 admin.site.register(Transport)
 admin.site.register(EventObjectRole)
 admin.site.register(SubscriptionFrequency)
+admin.site.register(DefaultSubscription)
 admin.site.register(AttendantRole)
 #TODO Borrar
 admin.site.register(Subscription)

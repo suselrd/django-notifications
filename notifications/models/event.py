@@ -9,6 +9,17 @@ from .action import Action
 from ..fields import JSONField
 
 
+class EventTypeCategory(models.Model):
+    name = models.CharField(max_length=255)
+    read_as = models.CharField(max_length=255)
+
+    class Meta:
+        app_label = 'notifications'
+
+    def __unicode__(self):
+        return self.read_as or self.name
+
+
 class EventObjectRole(models.Model):
     name = models.CharField(max_length=255)
 
@@ -24,6 +35,7 @@ class EventType(models.Model):
     read_as = models.CharField(max_length=255)
     action = models.ForeignKey(Action)
     target_type = models.CharField(max_length=255)
+    category = models.ForeignKey(EventTypeCategory)
 
     class Meta:
         app_label = 'notifications'

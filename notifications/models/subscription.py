@@ -30,9 +30,16 @@ class Subscription(models.Model):
     def create_default_subscription(user):
         transports = Transport.objects.all()
         for transport in transports:
-            subscription = Subscription(user=user, transport=transport)
+            try:
+                default_subscription = DefaultSubscription.objects.get(transport=transport)
+                subscription = Subscription(user=user, transport=transport, frequency=default_subscription.frequency)
+                event_types = default_subscription.items.all()
+            except:
+                subscription = Subscription(user=user, transport=transport)
+                event_types = EventType.objects.all().exclude(pk=1)
+
             subscription.save()
-            event_types = EventType.objects.all().exclude(pk=1)
+
             for event_type in event_types:
                 subscription.items.add(event_type)
 
@@ -50,3 +57,16 @@ class Subscription(models.Model):
         if self.frequency is None:
             self.frequency = SubscriptionFrequency.objects.get(pk=1)
         super(Subscription, self).save(force_insert, force_update, using, update_fields)
+
+
+class DefaultSubscription(models.Model):
+    transport = models.ForeignKey(Transport)
+    frequency = models.ForeignKey(SubscriptionFrequency, null=True, blank=True, default=1) #TODO
+    items = models.ManyToManyField(EventType, related_name='def_subs+', null=True, blank=True)
+
+    class Meta:
+        app_label = "notifications"
+        unique_together = ('transport',)
+
+    def __unicode__(self):
+        return "TRANSPORT: %s" % self.transport.name
