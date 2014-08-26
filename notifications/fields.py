@@ -61,7 +61,7 @@ class JSONField(six.with_metaclass(models.SubfieldBase,
 
 try:
     from south.modelsinspector import add_introspection_rules
-    add_introspection_rules([], ["^apps\.notifications\.fields\.JSONField"])
+    add_introspection_rules([], ["^notifications\.fields\.JSONField"])
 except:
     pass
 

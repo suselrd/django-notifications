@@ -1,3 +1,4 @@
 include LICENSE AUTHORS.rst README.rst
 recursive-include notifications/templates *.html
+recursive-include notifications/migrations *
 
