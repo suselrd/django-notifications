@@ -38,7 +38,7 @@ class Migration(SchemaMigration):
 
         # Adding field 'EventType.category'
         db.add_column(u'notifications_eventtype', 'category',
-                      self.gf('django.db.models.fields.related.ForeignKey')(default='default', to=orm['notifications.EventTypeCategory']),
+                      self.gf('django.db.models.fields.related.ForeignKey')(to=orm['notifications.EventTypeCategory'], null=True),
                       keep_default=False)
 
 
@@ -150,7 +150,7 @@ class Migration(SchemaMigration):
         'notifications.eventtype': {
             'Meta': {'object_name': 'EventType'},
             'action': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['notifications.Action']"}),
-            'category': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['notifications.EventTypeCategory']"}),
+            'category': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['notifications.EventTypeCategory']", 'null': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
             'read_as': ('django.db.models.fields.CharField', [], {'max_length': '255'}),

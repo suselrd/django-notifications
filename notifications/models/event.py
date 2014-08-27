@@ -35,7 +35,7 @@ class EventType(models.Model):
     read_as = models.CharField(max_length=255)
     action = models.ForeignKey(Action)
     target_type = models.CharField(max_length=255)
-    category = models.ForeignKey(EventTypeCategory)
+    category = models.ForeignKey(EventTypeCategory, null=True)
 
     class Meta:
         app_label = 'notifications'

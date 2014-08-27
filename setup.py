@@ -8,6 +8,7 @@ setup(
     version="0.0.2",
     packages=["notifications", "notifications.models"],
     include_package_data=True,
+    zip_safe=False,
     description="Event Notifications for Django",
     install_requires=['django>=1.6.1', 'celery>=3.1.4'],
     classifiers=[
