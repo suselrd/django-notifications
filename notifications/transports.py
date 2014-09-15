@@ -4,7 +4,6 @@ from django.contrib.sites.models import Site
 from django.core.mail import EmailMessage
 from django.template import loader
 from django.utils.translation import ugettext_lazy as _
-from main import settings
 from .models import Notification, FeedItem, Transport
 from . import TRANSPORT_EMAIL
 
@@ -54,7 +53,7 @@ class EmailTransport(BaseTransport):
 
     @staticmethod
     def create_template_context(user, role=''):
-        site = Site.objects.get(pk=settings.SITE_ID)
+        site = Site.objects.get_current()
         email = user.email if isinstance(user, User) else user
         context = {
             'email': email,

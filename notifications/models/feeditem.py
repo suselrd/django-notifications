@@ -1,6 +1,9 @@
 # coding=utf-8
 
+from django.conf import settings
 from django.contrib.auth.models import User
+from django.contrib.sites.managers import CurrentSiteManager
+from django.contrib.sites.models import Site
 from django.db import models
 from .event import Event
 from .notificationtemplateconfig import NotificationTemplateConfig
@@ -13,6 +16,11 @@ class FeedItem(models.Model):
     template_config = models.ForeignKey(NotificationTemplateConfig)
     context = models.CharField(default=u'default', max_length=255)
     seen = models.BooleanField(default=False)
+
+    site = models.ForeignKey(Site, default=settings.SITE_ID)
+
+    objects = models.Manager()
+    on_site = CurrentSiteManager()
 
     class Meta:
         app_label = 'notifications'
