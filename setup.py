@@ -5,7 +5,7 @@ setup(
     #url = "http://github.com/dgarciavicente/django-notifications/",
     author="Diana Garcia Vicente",
     author_email="dianagv@gmail.com",
-    version="0.1.0",
+    version="0.1.1",
     packages=["notifications", "notifications.models"],
     include_package_data=True,
     zip_safe=False,

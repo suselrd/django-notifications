@@ -1,7 +1,8 @@
 # coding=utf-8
-
 from django.contrib.contenttypes.generic import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.sites.managers import CurrentSiteManager
+from django.contrib.sites.models import Site
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.db import models
@@ -56,8 +57,18 @@ class Event(models.Model):
     extra_data = JSONField(null=True, blank=True)
     details = models.TextField(max_length=500)
 
+    site = models.ForeignKey(Site, null=True)
+
+    objects = models.Manager()
+    on_site = CurrentSiteManager()
+
     class Meta:
         app_label = 'notifications'
+
+    def __init__(self, *args, **kwargs):
+        super(Event, self).__init__(*args, **kwargs)
+        if not self.pk and not self.site_id:
+            self.site_id = getattr(self.target_object, 'site_id', Site.objects.get_current().pk)
 
     def __unicode__(self):
         return self.details
