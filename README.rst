@@ -9,9 +9,13 @@ Allows to configure (usign django admin) all the required system events to liste
 Changelog
 =========
 
+0.1.2
+-----
+-Fix in tasks multi-site behaviour.
+
 0.1.1
 -----
--Fin in Multisite behaviour.
+-Fix in Multisite behaviour.
 
 0.1.0
 -----
