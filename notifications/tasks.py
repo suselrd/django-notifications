@@ -20,7 +20,7 @@ def send_notification(event):
     transports = Transport.objects.all()
 
     for transport in transports:
-        #Obtain attendants for current transport for this event_type
+        # Obtain attendants for current transport for this event_type
         try:
             attendants_config = EventAttendantsConfig.objects.get(transport=transport, event_type=event.type)
             get_attendants_methods = attendants_config.get_attendants_methods
