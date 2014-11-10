@@ -8,6 +8,10 @@ Allows to configure (usign django admin) all the required system events to liste
 
 Changelog
 =========
+0.1.1
+-----
+-Fixed transport feed issue with single context
+
 0.1.0
 -----
 -Added Multisite support for feed items.
