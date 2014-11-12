@@ -1,7 +1,10 @@
 # coding=utf-8
-
 from django.contrib.contenttypes.generic import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.sites.managers import CurrentSiteManager
+from django.contrib.sites.models import Site
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.db import models
@@ -56,6 +59,11 @@ class Event(models.Model):
     extra_data = JSONField(null=True, blank=True)
     details = models.TextField(max_length=500)
 
+    site = models.ForeignKey(Site, null=True)
+
+    objects = models.Manager()
+    on_site = CurrentSiteManager()
+
     class Meta:
         app_label = 'notifications'
 
@@ -71,6 +79,12 @@ class Event(models.Model):
             return None
         except:
             return None
+
+
+@receiver(pre_save, sender=Event, dispatch_uid='pre_save_event')
+def pre_save_handler(instance, **kwargs):
+    if not instance.pk and not instance.site_id:
+        instance.site_id = getattr(instance.target_object, 'site_id', Site.objects.get_current().pk)
 
 
 class EventObjectRoleRelation(models.Model):

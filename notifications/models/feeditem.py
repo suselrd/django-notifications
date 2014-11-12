@@ -1,6 +1,5 @@
 # coding=utf-8
 
-from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.sites.managers import CurrentSiteManager
 from django.contrib.sites.models import Site
@@ -17,10 +16,15 @@ class FeedItem(models.Model):
     context = models.CharField(default=u'default', max_length=255)
     seen = models.BooleanField(default=False)
 
-    site = models.ForeignKey(Site, default=settings.SITE_ID)
+    site = models.ForeignKey(Site)
 
     objects = models.Manager()
     on_site = CurrentSiteManager()
+
+    def __init__(self, *args, **kwargs):
+        super(FeedItem, self).__init__(*args, **kwargs)
+        if not self.pk and not self.site_id:
+            self.site_id = self.event.site_id or Site.objects.get_current().pk
 
     class Meta:
         app_label = 'notifications'

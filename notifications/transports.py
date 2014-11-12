@@ -18,11 +18,6 @@ class BaseTransport(object):
     def send_multiple_notification(user, notifications, template, delete_sent=True):
         raise Exception(_(u'Not implemented!'))
 
-    @staticmethod
-    def send_massive_notification(users, event, subscription, template):
-        for user in users:
-            BaseTransport.send_notification(user, event, subscription, template)
-
 
 class EmailTransport(BaseTransport):
     @staticmethod
@@ -33,7 +28,7 @@ class EmailTransport(BaseTransport):
                                         sent=False)
             notification.save()
         else:
-            context = EmailTransport.create_template_context(user, role)
+            context = EmailTransport.create_template_context(user, event.site, role)
             context['subject'] = template.data['subject'] % ({'user': event.user.get_full_name() or event.user.username,
                                                               'target': unicode(event.target_object)})
             context['event'] = event
@@ -41,11 +36,16 @@ class EmailTransport(BaseTransport):
 
     @staticmethod
     def send_multiple_notification(user, notifications, template_config, delete_sent=True):
-        context = EmailTransport.create_template_context(user)
-        context['subject'] = template_config.data['subject']
-        context['notifications'] = notifications
 
-        EmailTransport.send_mail(context['email'], context['subject'], template_config.multiple_template_path, context)
+        for site in Site.objects.all():
+            site_notifications = notifications.filter(event__site=site)
+            if len(site_notifications) == 0:
+                continue
+            context = EmailTransport.create_template_context(user, site)
+            context['subject'] = template_config.data['subject']
+            context['notifications'] = site_notifications
+
+            EmailTransport.send_mail(context['email'], context['subject'], template_config.multiple_template_path, context)
 
         if delete_sent:
             notifications.objects.delete(sent=True)
@@ -53,8 +53,7 @@ class EmailTransport(BaseTransport):
             notifications.objects.update(sent=True)
 
     @staticmethod
-    def create_template_context(user, role=''):
-        site = Site.objects.get_current()
+    def create_template_context(user, site, role=''):
         email = user.email if isinstance(user, User) else user
         context = {
             'email': email,
@@ -85,5 +84,5 @@ class FeedTransport(BaseTransport):
     @staticmethod
     def _save_feed_item(user, role, event, template):
         feed_item = FeedItem(user=user, role=role, event=event, template_config=template, context=template.context,
-                             seen=False)
+                             seen=False, site=event.site)
         feed_item.save()
