@@ -2,6 +2,7 @@
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.core.mail import EmailMessage
+from django.db.models.query import QuerySet
 from django.template import loader
 from django.utils.translation import ugettext_lazy as _
 from .models import Notification, FeedItem, Transport
@@ -74,7 +75,7 @@ class EmailTransport(BaseTransport):
 class FeedTransport(BaseTransport):
     @staticmethod
     def send_notification(user, role, event, template, delay=False):
-        if len(template) > 1:
+        if isinstance(template, list) or isinstance(template, QuerySet):
             for tpl in template:
                 FeedTransport._save_feed_item(user, role, event, tpl)
         else:
