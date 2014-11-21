@@ -25,8 +25,22 @@ class EventAttendantsConfigAdmin(admin.ModelAdmin):
     list_filter = ('transport', 'event_type')
 
 
+class EventAttendantsAdminInline(admin.TabularInline):
+    model = EventAttendantsConfig
+    extra = 0
+
+
+class NotificationsTemplateConfigAdminInline(admin.TabularInline):
+    model = NotificationTemplateConfig
+    extra = 0
+
+
+class EventTypeAdmin(admin.ModelAdmin):
+    inlines = [EventAttendantsAdminInline, NotificationsTemplateConfigAdminInline]
+
+
 admin.site.register(Action)
-admin.site.register(EventType)
+admin.site.register(EventType, EventTypeAdmin)
 admin.site.register(EventTypeCategory)
 admin.site.register(EventAttendantsConfig, EventAttendantsConfigAdmin)
 admin.site.register(NotificationTemplateConfig, NotificationTemplateConfigAdmin)

@@ -9,6 +9,8 @@ logger = logging.getLogger(__name__)
 def get_attendants_from_config(config, event):
     from .models.usereventrelation import UserEventRelation
     attendants = dict()
+    if not config:
+        return []
     try:
         for method in config:
             target = None

@@ -9,6 +9,15 @@ Allows to configure (usign django admin) all the required system events to liste
 Changelog
 =========
 
+0.1.5
+-----
+-Fixing issues with no attendants transport
+-Improved administration
+
+0.1.4
+-----
+-Added public feed transport. Adapted tasks for supporting it
+
 0.1.3
 -----
 -Fix Feed transport issue with single context

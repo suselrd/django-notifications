@@ -5,7 +5,7 @@ from django.core.mail import EmailMessage
 from django.db.models.query import QuerySet
 from django.template import loader
 from django.utils.translation import ugettext_lazy as _
-from .models import Notification, FeedItem, Transport
+from .models import Notification, FeedItem, Transport, PublicFeedItem
 from . import TRANSPORT_EMAIL
 
 
@@ -22,6 +22,8 @@ class BaseTransport(object):
 class EmailTransport(BaseTransport):
     @staticmethod
     def send_notification(user, role, event, template, delay=False):
+        if not user or not role or not event or not template:
+            return
         if delay:
             transport = Transport.objects.get(pk=TRANSPORT_EMAIL)
             notification = Notification(user=user, event=event, transport=transport, template_config=template,
@@ -36,6 +38,8 @@ class EmailTransport(BaseTransport):
 
     @staticmethod
     def send_multiple_notification(user, notifications, template_config, delete_sent=True):
+        if not user or not notifications or not template_config:
+            return
 
         for site in Site.objects.all():
             site_notifications = notifications.filter(event__site=site)
@@ -45,7 +49,8 @@ class EmailTransport(BaseTransport):
             context['subject'] = template_config.data['subject']
             context['notifications'] = site_notifications
 
-            EmailTransport.send_mail(context['email'], context['subject'], template_config.multiple_template_path, context)
+            EmailTransport.send_mail(context['email'], context['subject'], template_config.multiple_template_path,
+                                     context)
 
         if delete_sent:
             notifications.objects.delete(sent=True)
@@ -75,6 +80,8 @@ class EmailTransport(BaseTransport):
 class FeedTransport(BaseTransport):
     @staticmethod
     def send_notification(user, role, event, template, delay=False):
+        if not user or not role or not event or not template:
+            return
         if isinstance(template, list) or isinstance(template, QuerySet):
             for tpl in template:
                 FeedTransport._save_feed_item(user, role, event, tpl)
@@ -85,4 +92,21 @@ class FeedTransport(BaseTransport):
     def _save_feed_item(user, role, event, template):
         feed_item = FeedItem(user=user, role=role, event=event, template_config=template, context=template.context,
                              seen=False, site=event.site)
+        feed_item.save()
+
+
+class PublicFeedTransport(BaseTransport):
+    @staticmethod
+    def send_notification(user, role, event, template, delay=False):
+        if isinstance(template, list) or isinstance(template, QuerySet):
+            for tpl in template:
+                PublicFeedTransport._save_feed_item(event, tpl)
+        else:
+            PublicFeedTransport._save_feed_item(event, template)
+
+    @staticmethod
+    def _save_feed_item(event, template):
+        feed_item = PublicFeedItem(event=event, template_config=template, context=template.context,
+                                   seen=False, site=event.site)
+
         feed_item.save()

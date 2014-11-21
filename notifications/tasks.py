@@ -15,7 +15,6 @@ def send_notification(event):
     #from . import NOTIFICATION_FREQUENCY_IMMEDIATE
     from .models import Transport, EventAttendantsConfig, Subscription, NotificationTemplateConfig
 
-    #TODO Ver si es conveniente restringir los transportes disponibles para un tipo de evento
     #TODO Cache!!!!
     transports = Transport.objects.all()
 
@@ -24,7 +23,7 @@ def send_notification(event):
         try:
             attendants_config = EventAttendantsConfig.objects.get(transport=transport, event_type=event.type)
             get_attendants_methods = attendants_config.get_attendants_methods
-        except:
+        except EventAttendantsConfig.DoesNotExist:
             get_attendants_methods = None
 
         attendants = get_attendants_from_config(get_attendants_methods, event)
@@ -35,9 +34,12 @@ def send_notification(event):
 
         #Get the template for sending this event type using this transport
         #TODO Hacer algo para que nunca explote, obtener la template por defecto
-        template_config = NotificationTemplateConfig.objects.filter(transport=transport, event_type=event.type)
-        if not transport.allows_context:
-            template_config = template_config[0]
+        try:
+            template_config = NotificationTemplateConfig.objects.filter(transport=transport, event_type=event.type)
+            if not transport.allows_context:
+                template_config = template_config[0]
+        except NotificationTemplateConfig.DoesNotExist:
+            continue
 
         #For every attendant, obtain the subscription for current transport and send the notification
         for attendant in attendants.items():
@@ -52,8 +54,10 @@ def send_notification(event):
             if subscription is None or subscription.user_is_subscribed(event.type):
                 delay = subscription and delta != 0 and transport.allows_freq_config
                 send_notification_method(attendant.user, attendant.role, event, template_config, delay)
-    if event.type_id == 4:
-        send_delayed_notifications()
+
+        if template_config and not get_attendants_methods:
+            send_notification_method(None, None, event, template_config)
+
 
 
 @task(name='notifications.send_delayed')

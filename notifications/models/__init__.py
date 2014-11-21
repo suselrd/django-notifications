@@ -9,3 +9,4 @@ from .notification import Notification
 from .feeditem import FeedItem
 from .subscription import SubscriptionFrequency, Subscription, DefaultSubscription
 from .usereventrelation import UserEventRelation
+from .publicfeeditem import PublicFeedItem
