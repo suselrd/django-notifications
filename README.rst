@@ -9,6 +9,11 @@ Allows to configure (usign django admin) all the required system events to liste
 Changelog
 =========
 
+0.1.6
+-----
+-Adding the possibility of sending "immediate" notifications (no celery involved)
+-Added possibility of using transports that do not admit subscription configuration
+
 0.1.5
 -----
 -Fixing issues with no attendants transport

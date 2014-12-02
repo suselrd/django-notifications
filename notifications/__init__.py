@@ -13,4 +13,7 @@ def create_event(user, event_type, target, details, extra_data=None, related_obj
         for role, obj in related_objects.items():
             event_relation_object = EventObjectRoleRelation(event=event, role=role, target_object=obj)
             event_relation_object.save()
-    send_notification.delay(event)
+    if event_type.immediate:
+        send_notification(event)
+    else:
+        send_notification.delay(event)

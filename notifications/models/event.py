@@ -39,6 +39,7 @@ class EventType(models.Model):
     action = models.ForeignKey(Action)
     target_type = models.CharField(max_length=255)
     category = models.ForeignKey(EventTypeCategory, null=True)
+    immediate = models.BooleanField(default=False)
 
     class Meta:
         app_label = 'notifications'

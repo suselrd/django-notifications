@@ -12,7 +12,6 @@ logger = logging.getLogger(__name__)
 
 @task(name='notifications.send_immediate')
 def send_notification(event):
-    #from . import NOTIFICATION_FREQUENCY_IMMEDIATE
     from .models import Transport, EventAttendantsConfig, Subscription, NotificationTemplateConfig
 
     #TODO Cache!!!!
@@ -23,22 +22,24 @@ def send_notification(event):
         try:
             attendants_config = EventAttendantsConfig.objects.get(transport=transport, event_type=event.type)
             get_attendants_methods = attendants_config.get_attendants_methods
+            attendants = get_attendants_from_config(get_attendants_methods, event)
         except EventAttendantsConfig.DoesNotExist:
             get_attendants_methods = None
+            attendants = dict()
 
-        attendants = get_attendants_from_config(get_attendants_methods, event)
 
         #Obtaining the actual method that sends the notification
         transport_class = import_by_path(transport.cls)
         send_notification_method = getattr(transport_class, 'send_notification')
 
         #Get the template for sending this event type using this transport
-        #TODO Hacer algo para que nunca explote, obtener la template por defecto
         try:
             template_config = NotificationTemplateConfig.objects.filter(transport=transport, event_type=event.type)
-            if not transport.allows_context:
+            if len(template_config) == 0:
+                template_config = None
+            elif not transport.allows_context:
                 template_config = template_config[0]
-        except NotificationTemplateConfig.DoesNotExist:
+        except:
             continue
 
         #For every attendant, obtain the subscription for current transport and send the notification

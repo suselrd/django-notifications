@@ -28,7 +28,7 @@ class Subscription(models.Model):
 
     @staticmethod
     def create_default_subscription(user):
-        transports = Transport.objects.all()
+        transports = Transport.objects.filter(allows_subscription=True)
         for transport in transports:
             try:
                 default_subscription = DefaultSubscription.objects.get(transport=transport)
@@ -60,8 +60,8 @@ class Subscription(models.Model):
 
 
 class DefaultSubscription(models.Model):
-    transport = models.ForeignKey(Transport)
-    frequency = models.ForeignKey(SubscriptionFrequency, null=True, blank=True, default=1) #TODO
+    transport = models.ForeignKey(Transport, limit_choices_to={'allows_subscription': True})
+    frequency = models.ForeignKey(SubscriptionFrequency, null=True, blank=True, default=1)  # TODO
     items = models.ManyToManyField(EventType, related_name='def_subs+', null=True, blank=True)
 
     class Meta:

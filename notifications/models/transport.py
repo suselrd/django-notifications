@@ -8,6 +8,7 @@ class Transport(models.Model):
     allows_freq_config = models.BooleanField(default=False)
     allows_context = models.BooleanField(default=False)
     delete_sent = models.BooleanField(default=True)
+    allows_subscription = models.BooleanField(default=True)
 
     class Meta:
         app_label = "notifications"
