@@ -1,12 +1,12 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name="django-notifications",
     #url = "http://github.com/dgarciavicente/django-notifications/",
     author="Diana Garcia Vicente",
     author_email="dianagv@gmail.com",
-    version="0.1.6",
-    packages=["notifications", "notifications.models", "notifications.migrations"],
+    version="0.2.0",
+    packages=find_packages(),
     include_package_data=True,
     zip_safe=False,
     description="Event Notifications for Django",

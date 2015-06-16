@@ -1,8 +1,8 @@
 # coding=utf-8
 from django.db import models
 from ..fields import JSONField
-from .event import EventType
-from .transport import Transport
+from event import EventType
+from transport import Transport
 
 
 class NotificationTemplateConfig(models.Model):
@@ -18,8 +18,9 @@ class NotificationTemplateConfig(models.Model):
         unique_together = ('event_type', 'transport', 'context')
 
     def __unicode__(self):
-        return "%s with transport %s uses %s in context %s" % (self.event_type.name, self.transport, self.template_path,
-                                                               self.context)
+        return u"%s with transport %s uses %s in context %s" % (
+            self.event_type.name, self.transport, self.template_path, self.context
+        )
 
 
 class MultipleNotificationTemplateConfig(models.Model):
@@ -33,4 +34,4 @@ class MultipleNotificationTemplateConfig(models.Model):
         unique_together = ('transport', 'context')
 
     def __unicode__(self):
-        return "Transport %s uses %s in context %s" % (self.transport, self.multiple_template_path, self.context)
+        return u"Transport %s uses %s in context %s" % (self.transport, self.multiple_template_path, self.context)

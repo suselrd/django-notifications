@@ -4,15 +4,23 @@ Django Event Notifications
 
 Event Notifications for Django>=1.6.1
 
-Allows to configure (usign django admin) all the required system events to listen and transports to use for notifying.
+Allows to configure (using django admin, or system settings, or even decorating notifying functions)
+all the notification system.
 
 Changelog
 =========
 
+0.2.0
+-----
+- Auto-configuring notification system from django settings.
+- notifier() decorator, for functions that mainly are for calling 'create_event' function.
+They only have to return the 'create_event' necessary arguments, and the decorator make the call for them.
+The decorator also configures the pertinent part of the notification system, if the necessary objects don't exist yet.
+
 0.1.6
 -----
 -Adding the possibility of sending "immediate" notifications (no celery involved)
--Added possibility of using transports that do not admit subscription configuration
+-Added possibility of using transports that do not allow subscription configuration
 
 0.1.5
 -----

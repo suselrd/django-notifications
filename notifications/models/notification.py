@@ -1,10 +1,9 @@
 # coding=utf-8
-
 from django.contrib.auth.models import User
 from django.db import models
-from .event import Event
-from .transport import Transport
-from .notificationtemplateconfig import NotificationTemplateConfig
+from event import Event
+from transport import Transport
+from notificationtemplateconfig import NotificationTemplateConfig
 
 
 class Notification(models.Model):
@@ -19,5 +18,9 @@ class Notification(models.Model):
         unique_together = ('user', 'event')
 
     def __unicode__(self):
-        return "For %s - %s %s - %s" % (self.user.get_full_name() or self.user.username, self.event.user.username,
-                                        self.event.type.name, unicode(self.event.target_object))
+        return u"For %s - %s %s - %s" % (
+            self.user.get_full_name() or self.user.username,
+            self.event.user.username,
+            self.event.type.name,
+            unicode(self.event.target_object)
+        )

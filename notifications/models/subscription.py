@@ -1,25 +1,36 @@
 # coding=utf-8
 from django.db import models
 from django.contrib.auth.models import User
-from .transport import Transport
-from .event import EventType
+from event import EventType
+from transport import Transport
+
+
+class SubscriptionFrequencyManager(models.Manager):
+    def get_by_natural_key(self, name):
+        return self.get(name=name)
 
 
 class SubscriptionFrequency(models.Model):
-    name = models.CharField(max_length=100, null=False)
+    name = models.CharField(max_length=100, null=False, unique=True)
     delta = models.CharField(max_length=100, default='0')
+
+    objects = SubscriptionFrequencyManager()
 
     class Meta:
         app_label = "notifications"
+        verbose_name_plural = 'subscription frequencies'
 
     def __unicode__(self):
         return self.name
 
+    def natural_key(self):
+        return self.name,
+
 
 class Subscription(models.Model):
     user = models.ForeignKey(User)
-    frequency = models.ForeignKey(SubscriptionFrequency, null=True, blank=True, default=1) #TODO
-    transport = models.ForeignKey(Transport)
+    frequency = models.ForeignKey(SubscriptionFrequency, null=True, blank=True, default=1)  # TODO
+    transport = models.ForeignKey(Transport, limit_choices_to={'allows_subscription': True})
     last_sent = models.DateTimeField(auto_now_add=True)
     items = models.ManyToManyField(EventType, related_name='subs+')
 
@@ -49,8 +60,11 @@ class Subscription(models.Model):
         return False
 
     def __unicode__(self):
-        return "USER: %s | TRANSPORT: %s | FREQ: %s" % (self.user.get_full_name() or self.user.username,
-                                                        self.transport.name, self.frequency.name)
+        return u"USER: %s | TRANSPORT: %s | FREQ: %s" % (
+            self.user.get_full_name() or self.user.username,
+            self.transport.name,
+            self.frequency.name
+        )
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
@@ -60,13 +74,12 @@ class Subscription(models.Model):
 
 
 class DefaultSubscription(models.Model):
-    transport = models.ForeignKey(Transport, limit_choices_to={'allows_subscription': True})
+    transport = models.ForeignKey(Transport, limit_choices_to={'allows_subscription': True}, unique=True)
     frequency = models.ForeignKey(SubscriptionFrequency, null=True, blank=True, default=1)  # TODO
     items = models.ManyToManyField(EventType, related_name='def_subs+', null=True, blank=True)
 
     class Meta:
         app_label = "notifications"
-        unique_together = ('transport',)
 
     def __unicode__(self):
-        return "TRANSPORT: %s" % self.transport.name
+        return u"TRANSPORT: %s" % self.transport.name

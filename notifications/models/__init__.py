@@ -2,8 +2,7 @@
 
 from .action import Action
 from .transport import Transport
-from .event import Event, EventType, EventObjectRole, EventObjectRoleRelation, EventTypeCategory
-from .eventattendantsconfig import EventAttendantsConfig, AttendantRole
+from .event import Event, EventType, EventObjectRole, EventObjectRoleRelation, EventTypeCategory, EventAttendantsConfig, AttendantRole
 from .notificationtemplateconfig import NotificationTemplateConfig, MultipleNotificationTemplateConfig
 from .notification import Notification
 from .feeditem import FeedItem

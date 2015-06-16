@@ -7,14 +7,14 @@ logger = logging.getLogger(__name__)
 
 
 def get_attendants_from_config(config, event):
-    from .models.usereventrelation import UserEventRelation
+    from models.usereventrelation import UserEventRelation
     attendants = dict()
     if not config:
         return attendants
     try:
         for method in config:
             target = None
-            source = method['source']
+            source = method.get('source', None)
             if source == 'target_obj':
                 target = event.target_object
             elif source == 'related_object':
@@ -29,8 +29,15 @@ def get_attendants_from_config(config, event):
                         users = attr()
                 else:
                     prop, role = method['value'].split(",")
+                    try:
+                        role = AttendantRole.objects.get_by_natural_key(role)
+                    except AttendantRole.DoesNotExist:
+                        role = None
                     if hasattr(target, prop):
-                        users = UserEventRelation(user=getattr(target, prop), role=AttendantRole.get_by_name(role))
+                        users = UserEventRelation(
+                            user=getattr(target, prop),
+                            role=role
+                        )
             else:
                 attendant_method = import_by_path(method['value'])
                 users = attendant_method(event)

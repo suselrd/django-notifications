@@ -8,23 +8,42 @@ from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.db import models
-from .action import Action
 from ..fields import JSONField
+from action import Action
+from transport import Transport
+
+
+class EventTypeCategoryManager(models.Manager):
+    def get_by_natural_key(self, name):
+        return self.get(name=name)
 
 
 class EventTypeCategory(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
     read_as = models.CharField(max_length=255)
+
+    objects = EventTypeCategoryManager()
 
     class Meta:
         app_label = 'notifications'
+        verbose_name_plural = 'event type categories'
 
     def __unicode__(self):
         return self.read_as or self.name
 
+    def natural_key(self):
+        return self.name,
+
+
+class EventObjectRoleManager(models.Manager):
+    def get_by_natural_key(self, name):
+        return self.get(name=name)
+
 
 class EventObjectRole(models.Model):
     name = models.CharField(max_length=255)
+
+    objects = EventObjectRoleManager()
 
     class Meta:
         app_label = 'notifications'
@@ -32,20 +51,69 @@ class EventObjectRole(models.Model):
     def __unicode__(self):
         return self.name
 
+    def natural_key(self):
+        return self.name,
+
+
+class EventTypeManager(models.Manager):
+    def get_by_natural_key(self, name):
+        return self.get(name=name)
+
 
 class EventType(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
     read_as = models.CharField(max_length=255)
     action = models.ForeignKey(Action)
     target_type = models.CharField(max_length=255)
     category = models.ForeignKey(EventTypeCategory, null=True)
     immediate = models.BooleanField(default=False)
 
+    transports = models.ManyToManyField(Transport, through='EventAttendantsConfig', related_name='event_types')
+
+    objects = EventTypeManager()
+
     class Meta:
         app_label = 'notifications'
 
     def __unicode__(self):
         return self.read_as or self.name
+
+    def natural_key(self):
+        return self.name,
+
+
+class EventAttendantsConfig(models.Model):
+    event_type = models.ForeignKey(EventType, related_name='attendants_configurations')
+    transport = models.ForeignKey(Transport, related_name='attendants_configurations')
+    get_attendants_methods = JSONField(null=True, blank=True)
+
+    class Meta:
+        app_label = 'notifications'
+        unique_together = ('event_type', 'transport')
+
+    def __unicode__(self):
+        return "%s in transport %s" % (self.event_type.name, self.transport.name)
+
+
+class AttendantRoleManager(models.Manager):
+    def get_by_natural_key(self, role):
+        return self.get(role=role)
+
+
+class AttendantRole(models.Model):
+    role = models.CharField(max_length=200, unique=True)
+    priority = models.IntegerField(default=1)
+
+    objects = AttendantRoleManager()
+
+    class Meta:
+        app_label = 'notifications'
+
+    def __unicode__(self):
+        return self.role
+
+    def natural_key(self):
+        return self.role,
 
 
 class Event(models.Model):
@@ -78,7 +146,7 @@ class Event(models.Model):
             if len(related_objects):
                 return related_objects[0].target_object
             return None
-        except:
+        except EventObjectRole.DoesNotExist:
             return None
 
 
