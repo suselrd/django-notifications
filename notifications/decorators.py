@@ -101,7 +101,8 @@ def notifier(
             read_as=action_details.get('read_as', action_name) if action_details else action_name,
             description=action_details.get('description', '') if action_details else '',
         )
-    except Exception:
+    except Exception as e:
+        logger.exception(e)
         action = None
     try:
         category = EventTypeCategory.objects.get_by_natural_key(event_category)
@@ -113,7 +114,8 @@ def notifier(
             name=event_category,
             read_as=category_details.get('read_as', event_category) if category_details else event_category,
         )
-    except Exception:
+    except Exception as e:
+        logger.exception(e)
         category = None
     try:
         event_type = EventType.objects.get_by_natural_key(event_name)
@@ -135,7 +137,8 @@ def notifier(
             category=category,
             immediate=event_immediate
         )
-    except Exception:
+    except Exception as e:
+        logger.exception(e)
         event_type = None
 
     if action and category and event_type:

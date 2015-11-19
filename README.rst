@@ -10,6 +10,10 @@ all the notification system.
 Changelog
 =========
 
+0.2.1
+-----
+- Added logging functionality where exceptions are silenced.
+
 0.2.0
 -----
 - Auto-configuring notification system from django settings.
